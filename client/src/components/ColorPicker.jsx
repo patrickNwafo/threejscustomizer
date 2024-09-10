@@ -7,8 +7,13 @@ import state from "../store"
 
 function ColorPicker() {
     const snap = useSnapshot(state);
+
+    const handleColorChange = (color) => {
+        state.color = color.hex; // Update the selected color
+        state.materials[snap.selectedMaterial] = color.hex; // Apply color to selected material
+    };
     return (
-        <div className=" absolute left-full ml-3">
+        <div className="absolute ml-3 left-full">
             <SketchPicker
                 color={snap.color}
                 disableAlpha
@@ -29,7 +34,7 @@ function ColorPicker() {
                 //     "#512314",
                 //     "#5F123D"
                 // ]}
-                onChange={(color) => state.color = color.hex}
+                onChange={handleColorChange}
             />
         </div>
     )

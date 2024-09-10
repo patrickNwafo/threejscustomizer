@@ -11,6 +11,7 @@ import { EditorTabs, FilterTabs, DecalTypes } from "../config/constants";
 
 import { fadeAnimation, slideAnimation } from "../config/motion";
 import { AIPicker, ColorPicker, CustomButton, FilePicker, Tab } from "../components";
+import MaterialPicker from "../components/MaterialPicker";
 
 const Custormizer = () => {
     const snap = useSnapshot(state);
@@ -138,11 +139,10 @@ const Custormizer = () => {
                                     />
                                 ))}
                                 {generateTabContent()}
+                                <MaterialPicker />
                             </div>
                         </div>
                     </motion.div>
-
-
                     <motion.div className="absolute z-10 top-5 right-5" {...fadeAnimation}>
                         <CustomButton
                             type="filled"
