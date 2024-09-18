@@ -1,13 +1,15 @@
-import Canvas from "./canvas"
-import Custormizer from "./pages/Custormizer"
-import Home from "./pages/Home"
+
+import Home from "./pages/Home";
+import Custormizer from "./pages/Custormizer";
+import CanvasModel from "./CanvasModel";
+
 
 function App() {
 
   return (
-    <main className="app transition-all">
+    <main className="transition-all app">
       <Home />
-      <Canvas />
+      <CanvasModel />
       <Custormizer />
     </main>
   )

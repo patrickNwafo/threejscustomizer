@@ -10,22 +10,29 @@ import { downloadCanvasToImage, reader } from "../config/helpers";
 import { EditorTabs, FilterTabs, DecalTypes } from "../config/constants";
 
 import { fadeAnimation, slideAnimation } from "../config/motion";
-import { AIPicker, ColorPicker, CustomButton, FilePicker, Tab } from "../components";
+import { ColorPicker, CustomButton, FilePicker, Tab } from "../components";
 import MaterialPicker from "../components/MaterialPicker";
+import DownloadButton from "../components/DownloadButton";
+import { saveAs } from 'file-saver';
+
+
 
 const Custormizer = () => {
     const snap = useSnapshot(state);
-
     const [file, setFile] = useState('');
 
-    const [prompt, setPrompt] = useState('');
-    const [generatingImg, setGeneratingImg] = useState(false)
+    // const [prompt, setPrompt] = useState('');
+    // const [generatingImg, setGeneratingImg] = useState(false)
 
     const [activeEditorTab, setActiveEditorTab] = useState("")
     const [activeFilterTab, setActiveFilterTab] = useState({
         logoShirt: true,
         stylishShirt: false,
     })
+
+
+
+
 
     //show tab content depending on the activeTab
     const generateTabContent = () => {
@@ -38,47 +45,64 @@ const Custormizer = () => {
                     setFile={setFile}
                     readFile={readFile}
                 />
-            case "aipicker":
-                return <AIPicker
-                    prompt={prompt}
-                    setPrompt={setPrompt}
-                    generatingImg={generatingImg}
-                    handleSubmit={handleSubmit}
-                />
             default:
                 return null
         }
 
     }
 
-    const handleSubmit = async (type) => {
-        if (!prompt) return alert("Please enter a prompt");
-
-        try {
-            // call our backend to generate an ai image!
-            setGeneratingImg(true);
-
-            const response = await fetch('https://threejscustomizer.onrender.com/api/v1/dalle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    prompt,
-                })
-            })
-
-            const data = await response.json();
-
-            handleDecals(type, `data:image/png;base64,${data.photo}`)
-
-        } catch (error) {
-            alert(error)
-        } finally {
-            setGeneratingImg(false)
-            setActiveEditorTab("");
+    const handleDownloadImage = () => {
+        // Ensure you target the canvas inside the Canvas component
+        const canvas = document.querySelector("canvas");
+        if (canvas) {
+            const dataURL = canvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = dataURL;
+            link.download = "customized_model.png";
+            link.click();
         }
-    }
+    };
+
+    // const handleDownloadModel = () => {
+    //     const exporter = new GLTFExporter();
+    //     // Ensure that you are passing the correct scene from the Canvas
+    //     exporter.parse(
+    //         state.scene, // Ensure state.scene is your 3D scene
+    //         (result) => {
+    //             const blob = new Blob([JSON.stringify(result)], { type: 'application/json' });
+    //             saveAs(blob, 'customized_model.gltf');
+    //         }
+    //     );
+    // };
+
+    // const handleSubmit = async (type) => {
+    //     if (!prompt) return alert("Please enter a prompt");
+
+    //     try {
+    //         // call our backend to generate an ai image!
+    //         setGeneratingImg(true);
+
+    //         const response = await fetch('https://threejscustomizer.onrender.com/api/v1/dalle', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({
+    //                 prompt,
+    //             })
+    //         })
+
+    //         const data = await response.json();
+
+    //         handleDecals(type, `data:image/png;base64,${data.photo}`)
+
+    //     } catch (error) {
+    //         alert(error)
+    //     } finally {
+    //         setGeneratingImg(false)
+    //         setActiveEditorTab("");
+    //     }
+    // }
 
     const handleDecals = (type, result) => {
         const decalType = DecalTypes[type];
@@ -129,8 +153,8 @@ const Custormizer = () => {
                         key="custom"
                         className="absolute top-0 left-0 z-10"
                         {...slideAnimation("left")}>
-                        <div className="flex items-center min-h-screen ">
-                            <div className=" editortabs-container tabs">
+                        <div className="flex items-center min-h-screen">
+                            <div className="editortabs-container tabs">
                                 {EditorTabs.map((tab) => (
                                     <Tab
                                         key={tab.name}
@@ -139,10 +163,13 @@ const Custormizer = () => {
                                     />
                                 ))}
                                 {generateTabContent()}
-                                <MaterialPicker />
+
                             </div>
                         </div>
                     </motion.div>
+
+
+
                     <motion.div className="absolute z-10 top-5 right-5" {...fadeAnimation}>
                         <CustomButton
                             type="filled"
@@ -163,6 +190,14 @@ const Custormizer = () => {
                                 handleClick={() => handleActiveFilterTab(tab.name)}
                             />
                         ))}
+                        <motion.div className="absolute top-0 z-10 left-5">
+                            <MaterialPicker />
+                        </motion.div>
+                        <motion.div className="absolute top-0 z-10 right-5">
+                            <DownloadButton
+                                onDownloadImage={handleDownloadImage}
+                            />
+                        </motion.div>
                     </motion.div>
                 </>
             )}

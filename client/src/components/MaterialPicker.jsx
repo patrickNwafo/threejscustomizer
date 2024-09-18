@@ -6,10 +6,10 @@ function MaterialPicker() {
   const snap = useSnapshot(state);
 
   const materials = [
-    { key: 'Material.001', label: 'Wheels' },
-    { key: 'Material.002', label: 'Shell' },
-    { key: 'Material.003', label: 'Screws' },
-    { key: 'Material.007', label: 'Bottom' },
+    { key: 'Material.009', label: 'Wheels' },
+    { key: 'Material.011', label: 'Shell' },
+    { key: 'Material.010', label: 'Screws' },
+    { key: 'Material.012', label: 'Bottom' },
   ];
 
   const handleMaterialSelect = (materialKey) => {
@@ -18,15 +18,15 @@ function MaterialPicker() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-row bg-[#A3B18A] p-2 space-x-2">
       {materials.map((material) => (
         <button
           key={material.key}
           onClick={() => handleMaterialSelect(material.key)}
           className={`py-2 px-0 font-serif rounded-none transition-all duration-300 ease-in-out 
             ${snap.selectedMaterial === material.key
-              ? 'bg-blue-500 text-white shadow-lg transform scale-105'
-              : ' text-black hover:bg-gray-400'
+              ? ' text-gray-300 shadow-lg transform scale-105'
+              : ' text-white'
             }`}
         >
           {material.label}
