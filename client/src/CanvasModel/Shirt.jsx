@@ -1,5 +1,5 @@
 
-import { useRef, useEffect } from "react"
+import { useEffect } from "react"
 import { easing } from "maath"
 import { useSnapshot } from "valtio"
 import { useFrame } from "@react-three/fiber"
@@ -12,7 +12,6 @@ const Shirt = () => {
     const snap = useSnapshot(state);
     const modelCfg = MODELS[snap.activeModel] || MODELS.shirt;
     const isGroup = modelCfg.type === "group";
-    const groupRef = useRef();
 
     const { nodes, materials } = useGLTF(modelCfg.file);
 
@@ -51,10 +50,8 @@ const Shirt = () => {
                 }
             });
         }
-        // Gentle auto-rotation for group models (cinematic feel)
-        if (isGroup && groupRef.current) {
-            groupRef.current.rotation.y += delta * 0.3;
-        }
+        // Note: no local auto-rotation here — CameraRig handles all rotation
+        // so mouse tracking works cleanly on both shirt and cassette
     });
 
     if (!rootNode) return null;
@@ -72,7 +69,7 @@ const Shirt = () => {
     // ── Group model (e.g. cassette) ──────────────────────────────
     if (isGroup) {
         return (
-            <group key={stateString} ref={groupRef}>
+            <group key={stateString}>
                 <primitive object={rootNode} />
                 {/* Logo sticker — a flat plane overlaid on the model surface */}
                 {snap.isLogoTexture && (
