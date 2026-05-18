@@ -1,32 +1,30 @@
 import { Canvas } from "@react-three/fiber"
 import { Environment, Center } from "@react-three/drei"
 import Shirt from "./Shirt"
+import Backdrop from "./Backdrop"
 import CameraRig from "./CameraRig"
-import DownloadButton from "../components/DownloadButton"
-// import useWindowSize from "../hooks/useWindowSize"
+import ErrorBoundary from "../components/ErrorBoundary"
 
 const CanvasModel = () => {
-    // const { width } = useWindowSize();
-
-    // const fov = width < 768 ? 45 : 30;
     return (
-        <>
+        <ErrorBoundary>
             <Canvas
                 shadows
-                camera={{ position: [0, 0, 0], fov: 20 }}
+                camera={{ position: [0, 0, 0], fov: 25 }}
                 gl={{ preserveDrawingBuffer: true }}
-                className="w-full h-full max-w-full transition-all ease-in"
+                className="w-full max-w-full h-full transition-all ease-in"
             >
-                <ambientLight intensity={0.4} />
+                <ambientLight intensity={0.5} />
                 <Environment preset="city" />
 
                 <CameraRig>
+                    <Backdrop />
                     <Center>
                         <Shirt />
                     </Center>
                 </CameraRig>
             </Canvas>
-        </>
+        </ErrorBoundary>
     )
 }
 

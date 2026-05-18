@@ -1,115 +1,122 @@
 
+import { useRef, useEffect } from "react"
 import { easing } from "maath"
 import { useSnapshot } from "valtio"
 import { useFrame } from "@react-three/fiber"
 import { Decal, useGLTF, useTexture } from "@react-three/drei"
 
 import state from "../store";
-
+import MODELS from "../config/models";
 
 const Shirt = () => {
     const snap = useSnapshot(state);
-    const { nodes, materials } = useGLTF('/disk3.glb');
+    const modelCfg = MODELS[snap.activeModel] || MODELS.shirt;
+    const isGroup = modelCfg.type === "group";
+    const groupRef = useRef();
 
+    const { nodes, materials } = useGLTF(modelCfg.file);
 
-    const logoTexture = useTexture(snap.logoDecal)
-    // const fullTexture = useTexture(snap.fullDecal)
+    // Hooks always called (React rules)
+    const logoTexture = useTexture(snap.logoDecal);
+    const fullTexture = useTexture(snap.fullDecal);
 
+    const rootNode = nodes[modelCfg.node];
+    const singleMaterial = !isGroup ? materials[modelCfg.material] : null;
 
-    // useFrame((state, delta) => easing.dampC(materials['Material.007'].color, snap.color, 0.25, delta))
+    // Enable shadows on all children of group models
+    useEffect(() => {
+        if (isGroup && rootNode) {
+            rootNode.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    // Clone materials so we can mutate color without affecting other instances
+                    if (child.material && !child.material.__cloned) {
+                        child.material = child.material.clone();
+                        child.material.__cloned = true;
+                    }
+                }
+            });
+        }
+    }, [isGroup, rootNode]);
 
-    // Smoothly transition the colors
     useFrame((_, delta) => {
-        // Apply color to each material smoothly
-        Object.keys(snap.materials).forEach((materialKey) => {
-            const material = materials[materialKey];
-            const color = snap.materials[materialKey];
-
-            if (material && color) {
-                easing.dampC(material.color, color, 0.25, delta);
-            }
-        });
+        // Color animation
+        if (!isGroup && singleMaterial?.color) {
+            easing.dampC(singleMaterial.color, snap.color, 0.25, delta);
+        } else if (isGroup && rootNode) {
+            rootNode.traverse((child) => {
+                if (child.isMesh && child.material?.color) {
+                    easing.dampC(child.material.color, snap.color, 0.25, delta);
+                }
+            });
+        }
+        // Gentle auto-rotation for group models (cinematic feel)
+        if (isGroup && groupRef.current) {
+            groupRef.current.rotation.y += delta * 0.3;
+        }
     });
 
-    const stateString = JSON.stringify(snap);
+    if (!rootNode) return null;
+
+    // Find the first child mesh of a group (for logo decal target)
+    let firstChildMesh = null;
+    if (isGroup) {
+        rootNode.traverse((child) => {
+            if (!firstChildMesh && child.isMesh) firstChildMesh = child;
+        });
+    }
+
+    const stateString = JSON.stringify({ m: snap.activeModel, l: snap.logoDecal, f: snap.fullDecal });
+
+    // ── Group model (e.g. cassette) ──────────────────────────────
+    if (isGroup) {
+        return (
+            <group key={stateString} ref={groupRef}>
+                <primitive object={rootNode} />
+                {/* Logo sticker — a flat plane overlaid on the model surface */}
+                {snap.isLogoTexture && (
+                    <mesh
+                        position={modelCfg.logo.position}
+                        rotation={modelCfg.logo.rotation}
+                        scale={[modelCfg.logo.scale, modelCfg.logo.scale, 0.001]}
+                    >
+                        <planeGeometry args={[1, 1]} />
+                        <meshBasicMaterial
+                            map={logoTexture}
+                            transparent
+                            alphaTest={0.05}
+                            depthWrite={false}
+                        />
+                    </mesh>
+                )}
+            </group>
+        );
+    }
+
+    // ── Single-mesh model (e.g. shirt) ───────────────────────────
     return (
-        // <group
-        //     key={stateString}
-        //     position={[-0.15, -0.522, 0.074]}
-        //     rotation={[1.453, 0.033, 1.38]}
-        //     scale={[0.002, 0.002, 0.002]}>
-        //     <mesh
-        //         castShadow
-        //         receiveShadow
-        //         geometry={nodes.model_4001.geometry}
-        //         material={materials['Material.001']}
-        //     />
-        //     <mesh
-        //         castShadow
-        //         receiveShadow
-        //         geometry={nodes.model_4001_1.geometry}
-        //         material={materials['Material.003']}
-        //     />
-        //     <mesh
-        //         castShadow
-        //         receiveShadow
-        //         geometry={nodes.model_4001_2.geometry}
-        //         material={materials['Material.002']}
-        //     />
-        //     <mesh
-        //         castShadow
-        //         receiveShadow
-        //         geometry={nodes.model_4001_3.geometry}
-        //         material={materials['Material.007']}
-        //     >
-        //         {snap.isFullTexture && (
-        //             <Decal
-        //                 position={[0, 0, 0]}
-        //                 rotation={[0, 0, 0]}
-        //                 scale={0.2}
-        //                 map={fullTexture}
-        //             />
-        //         )}
-
-        //         {snap.isLogoTexture && (
-        //             <Decal
-        //                 position={[0, 0, 0]}
-        //                 rotation={[0, 0, 0]}
-        //                 scale={0.2}
-        //                 map={logoTexture}
-        //                 mapAnisotropy={16}
-        //                 depthTest={false}
-        //                 depthWrite={true}
-        //             />
-        //         )}
-        //     </mesh>
-
-        // </group>
-
-        <group dispose={null} key={stateString}>
+        <group key={stateString}>
             <mesh
                 castShadow
-                receiveShadow
-                geometry={nodes.model_4003.geometry}
-                material={materials['Material.009']}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.model_4003_1.geometry}
-                material={materials['Material.010']}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.model_4003_2.geometry}
-                material={materials['Material.011']}
+                geometry={rootNode.geometry}
+                material={singleMaterial}
+                material-roughness={1}
+                dispose={null}
             >
+                {snap.isFullTexture && (
+                    <Decal
+                        position={modelCfg.full.position}
+                        rotation={modelCfg.full.rotation}
+                        scale={modelCfg.full.scale}
+                        map={fullTexture}
+                    />
+                )}
                 {snap.isLogoTexture && (
                     <Decal
-                        position={[0.013, 0.074, 0.061]}
-                        rotation={[0, 0, 0]}
-                        scale={0.1}
+                        position={modelCfg.logo.position}
+                        rotation={modelCfg.logo.rotation}
+                        scale={modelCfg.logo.scale}
                         map={logoTexture}
                         mapAnisotropy={16}
                         depthTest={false}
@@ -117,14 +124,10 @@ const Shirt = () => {
                     />
                 )}
             </mesh>
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.model_4003_3.geometry}
-                material={materials['Material.012']}
-            />
         </group>
-    )
+    );
 }
+
+Object.values(MODELS).forEach((m) => useGLTF.preload(m.file));
 
 export default Shirt

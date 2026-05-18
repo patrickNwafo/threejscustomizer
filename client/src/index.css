@@ -1,11 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 html {
     font-family: "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 @supports (font-variation-settings: normal) {
@@ -14,62 +21,188 @@ html {
     }
 }
 
+/* ─── App Shell ─────────────────────────────── */
 .app {
-    @apply relative w-full h-screen overflow-hidden bg-[#DAD7CD];
+    @apply overflow-hidden relative w-full h-screen;
+    transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ─── Home Page ──────────────────────────────── */
 .home {
-    @apply absolute z-10 flex flex-col items-start justify-start p-6 w-fit xl:h-full xl:justify-between xl:py-8 xl:px-36 sm:p-8 max-xl:gap-7;
+    @apply flex absolute z-10 flex-col justify-start items-start p-6 w-fit xl:h-full xl:justify-between xl:py-12 xl:px-16 sm:p-8 max-xl:gap-7;
 }
 
 .home-content {
-    @apply flex flex-col justify-start flex-1 gap-10 xl:justify-center;
+    @apply flex flex-col flex-1 gap-8 justify-start w-full xl:justify-center;
+    max-width: 420px;
 }
 
 .head-text {
-    @apply xl:text-[10rem] text-[6rem] lg:text-[6rem] xl:leading-[11rem] leading-[5rem] font-medium text-[#344E41];
+    @apply text-[5rem] lg:text-[7.5rem] xl:text-[9rem]
+           leading-[4.5rem] lg:leading-[7rem] xl:leading-[10rem]
+           font-black uppercase tracking-tight text-gray-900;
 }
 
-.download-btn {
-    @apply flex items-center justify-center rounded-full outline-none cursor-pointer w-14 h-14 glassmorphism;
+/* ─── Glassmorphism Base ─────────────────────── */
+.glassmorphism {
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
 }
 
+/* ─── Editor Sidebar ─────────────────────────── */
 .editortabs-container {
-    @apply bg-[#A3B18A] w-16 border-[2px] rounded-lg flex flex-col justify-center items-center ml-1 py-4 gap-4 p-4;
+    @apply flex flex-col gap-2 justify-center items-center py-3 ml-3;
+    width: 58px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 8px 40px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    padding: 12px 0;
 }
 
+/* ─── Tab Buttons ────────────────────────────── */
+.tab-btn {
+    @apply flex justify-center items-center cursor-pointer select-none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    transform: scale(1.08);
+}
+
+.tab-btn.active-tab {
+    background: rgba(0, 0, 0, 0.08);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Filter Tabs ────────────────────────────── */
 .filtertabs-container {
-    @apply absolute left-0 right-0 z-10 flex flex-wrap items-center justify-center w-full gap-4 bottom-5;
+    @apply flex absolute right-0 left-0 bottom-6 z-10 gap-3 justify-center items-center w-full;
+}
+
+.filter-tab-pill {
+    @apply flex justify-center items-center cursor-pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.filter-tab-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.filter-tab-pill.active {
+    border-color: rgba(0, 0, 0, 0.35);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* ─── Download Button ────────────────────────── */
+.download-btn {
+    @apply flex justify-center items-center cursor-pointer outline-none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+/* ─── Picker Panels ──────────────────────────── */
+.picker-panel {
+    @apply flex absolute top-0 left-full flex-col;
+    margin-left: 14px;
+    border-radius: 18px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .aipicker-container {
-    @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] rounded-md flex flex-col gap-4;
+    @apply gap-3 picker-panel;
+    width: 200px;
+    min-height: 200px;
 }
 
 .aipicker-textarea {
-    @apply flex-1 w-full p-2 text-sm bg-transparent border border-gray-300 outline-none;
+    @apply flex-1 p-2.5 w-full text-sm bg-white bg-opacity-60 rounded-xl outline-none;
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
+    resize: none;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.aipicker-textarea:focus {
+    border-color: rgba(0, 0, 0, 0.22);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .filepicker-container {
-    @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] flex flex-col rounded-md;
+    @apply gap-3 picker-panel;
+    width: 200px;
+    min-height: 200px;
 }
 
 .filepicker-label {
-    @apply border border-gray-300 py-1.5 px-2 rounded-md shadow-sm text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer w-fit;
+    @apply px-3 py-2 text-xs font-medium text-gray-600 rounded-xl cursor-pointer w-fit;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1.5px dashed rgba(0, 0, 0, 0.15);
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
 }
 
-.tab-btn {
-    @apply flex items-center justify-center cursor-pointer select-none w-14 h-14;
+.filepicker-label:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.3);
 }
 
-.glassmorphism {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+/* ─── Picker panel label ─────────────────────── */
+.picker-label {
+    @apply text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1;
 }
 
+/* ─── Color Picker Override ──────────────────── */
 input[type="file"] {
     z-index: -1;
     position: absolute;
@@ -77,15 +210,28 @@ input[type="file"] {
 }
 
 .sketch-picker {
-    width: 170px !important;
-    background: rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 2px 30px 0 rgba(31, 38, 135, 0.07) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    width: 180px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 16px !important;
+}
+
+.sketch-picker input {
+    font-family: "Inter", sans-serif !important;
+    font-size: 11px !important;
     border-radius: 6px !important;
 }
 
-.sketch-picker > div:nth-child(3) {
-    display: none !important;
+/* ─── Buttons ────────────────────────────────── */
+button {
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+button:active {
+    transform: scale(0.96) !important;
 }

@@ -19,18 +19,24 @@ router.route("/").post(async (req, res) => {
         const { prompt } = req.body;
 
         const response = await openai.images.generate({
+            model: 'dall-e-2',
             prompt,
             n: 1,
             size: '1024x1024',
-            response_format: 'b64_json'
         });
 
-        const image = response.data[0].b64_json;
+        const imageUrl = response.data[0].url;
 
-        res.status(200).json({ photo: image });
+        // Fetch image and convert to base64 (avoids CORS on client)
+        const imgResp = await fetch(imageUrl);
+        const arrayBuffer = await imgResp.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString('base64');
+
+        res.status(200).json({ photo: base64 });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Something went wrong" })
+        console.error("OpenAI Error:", error?.message || error);
+        const message = error?.message || "Something went wrong";
+        res.status(500).json({ message })
     }
 })
 

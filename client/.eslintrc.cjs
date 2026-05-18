@@ -17,5 +17,8 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    'react/no-unknown-property': ['error', { ignore: ['geometry', 'material', 'material-roughness', 'castShadow', 'receiveShadow', 'dispose', 'intensity', 'position', 'rotation', 'scale', 'args', 'ref', 'object', 'map', 'mapAnisotropy', 'depthTest', 'depthWrite', 'temporal', 'frames', 'alphaTest', 'ambient', 'amount', 'radius', 'preset', 'transparent', 'visible', 'wireframe', 'side', 'color', 'roughness', 'metalness', 'emissive', 'attach', 'shadows', 'gl', 'camera', 'onPointerOver', 'onPointerOut', 'onClick', 'frustumCulled'] }],
+    'react/no-unescaped-entities': 'off',
+    'react/prop-types': 'off',
   },
 }
